@@ -1,8 +1,10 @@
 {
   "expo": {
-    "name": "tasks-app-expo",
-    "slug": "tasks-app-expo",
+    "name": "tasks-app-expo-simulado",
+    "slug": "tasks-app-GabrielGarcia",
     "version": "1.0.0",
+    "android.package": "br.com.oliveiragabriel.tasks",
+    "ios.bundleIdentifier": "br.com.oliveiragabriel.tasks",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,13 +23,20 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.GabrielGarcia.tasksapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "@react-native-community/datetimepicker"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "30925848-0f51-4443-8355-d4009ee87f2e"
+      }
+    },
+    "owner": "teste1235"
   }
 }

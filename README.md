@@ -53,3 +53,16 @@ As requisições (operações CRUD) são feitas no arquivo `src/utils/handle-api
 - `App.tsx`: Ponto de entrada do aplicativo, interface principal e gerenciamento da lista de **tarefas** (`tasks`).
 - `src/components/Task.tsx`: Componente visual responsável por renderizar cada tarefa individualmente.
 - `src/utils/handle-api.ts`: Funções utilitárias (`getAllTasks`, `addTask`, `updateTask`, `deleteTask`) e interface de tipagem (`TaskItem`) para a comunicação unificada com o back-end.
+
+## Deploy com EAS 🚀
+
+- O EAS é um serviço onde ocorre o build de uma aplicação nativa nos servidores da EAS, servindo para Android, iOS Simulator e Iphone device
+- Diferença entre os perfis development, preview e production:
+
+- O perfil development: Eles são builds especializados no projeto que incluem ferramentas de desenvolvimento do Expo, esses tipos de builds incluem todas as dependências nativas dentro do seu projeto, fazendo com que você rode como se fosse uma build de produção dentro do seu projeto em um simulador, emulator ou dispositivo físico.
+
+- O perfil preview: Ele serve para quando você fizer mudanças no seu projeto, você poder compartilhar uma prévia de suas mudanças com o seu time. Isso é útil para quando você quiser revisar mudanças com seu time.
+
+- O perfil production: Ele serve para publicar o aplicativo e distribuir o app para Google Play Store(Android) ou no Apple Pay Store (iOS)
+
+- Como executar o build de preview:  eas build --profile preview --platform android
