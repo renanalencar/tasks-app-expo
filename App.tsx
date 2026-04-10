@@ -14,6 +14,7 @@ export default function App() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [taskId, setTaskId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [logoError, setLogoError] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -60,11 +61,16 @@ export default function App() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <Image 
-            source={require('./assets/task-app-banner.png')} 
-            style={styles.logo} 
-          />
-          <Text style={styles.header}>Tarefas</Text>
+          {logoError ? (
+            <Text style={styles.header}>Gerenciador de Tarefas</Text>
+          ) : (
+            <Image 
+              source={require('./assets/task-app-banner.png')} 
+              style={styles.logo} 
+              onError={() => setLogoError(true)}
+            />
+          )}
+          {!logoError && <Text style={styles.header}>Tarefas</Text>}
         </View>
 
         <View style={styles.counterContainer}>
