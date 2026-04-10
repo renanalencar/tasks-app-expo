@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, Platform, StatusBar as RNStatusBar, Image, Pressable, ActivityIndicator, Modal } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, Platform, StatusBar as RNStatusBar, Image, Pressable, ActivityIndicator, Modal, Button } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Checkbox from 'expo-checkbox';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import TaskList from './src/components/TaskList';
 import { addTask, deleteTask, getAllTasks, updateTask, TaskItem } from './src/utils/handle-api';
 import { globalStyles } from './src/styles/global';
+import AboutScreen from './src/components/AboutScreen';
 
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
   const [logoError, setLogoError] = useState(false);
   const [filter, setFilter] = useState<'all' | 'completed' | 'pending'>('all');
 
+  const [aboutModalVisible, setAboutModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [dueDate, setDueDate] = useState<Date | null>(null);
@@ -123,6 +125,10 @@ export default function App() {
           >
             <Text style={styles.actionButtonText}>Excluir todas</Text>
           </Pressable>
+        </View>
+
+        <View style={styles.aboutButtonContainer}>
+          <Button title="Sobre o App" onPress={() => setAboutModalVisible(true)} />
         </View>
 
         <TaskList 
@@ -243,6 +249,14 @@ export default function App() {
         </View>
       </Modal>
 
+      <Modal
+        visible={aboutModalVisible}
+        animationType="slide"
+        onRequestClose={() => setAboutModalVisible(false)}
+      >
+        <AboutScreen onClose={() => setAboutModalVisible(false)} />
+      </Modal>
+
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -319,6 +333,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 16,
     marginTop: 16,
+  },
+  aboutButtonContainer: {
+    marginTop: 16,
+    alignItems: 'center',
   },
   actionButton: {
     paddingVertical: 14,
