@@ -5,6 +5,7 @@ import Checkbox from 'expo-checkbox';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import TaskList from './src/components/TaskList';
 import { addTask, deleteTask, getAllTasks, updateTask, TaskItem } from './src/utils/handle-api';
+import globalStyles from './src/styles/global'
 
 export default function App() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -62,7 +63,7 @@ export default function App() {
             source={require('./assets/task-app-banner.png')} 
             style={styles.logo} 
           />
-          <Text style={styles.header}>Tarefas</Text>
+          <Text style={globalStyles.text}>Tarefas</Text>
         </View>
 
         <View style={styles.counterContainer}>
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0,
+    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 20,
   },
   container: {
     flex: 1,

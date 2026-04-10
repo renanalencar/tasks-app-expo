@@ -1,7 +1,17 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather, AntDesign } from '@expo/vector-icons';
 import { TaskItem as TaskType } from '../utils/handle-api';
+
+const [isVencida, dataPrazo] = useState(false);
+
+const definirData = () => {
+  if (isVencida) {
+    return <Text style={styles.text}>Você está logado!</Text>;
+    } else {
+      return <Text style={styles.text}>Por favor, faça login.</Text>;
+    } 
+}
 
 interface TaskItemProps {
   task: TaskType;
@@ -35,6 +45,17 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, updateMode, deleteTask }) => 
 };
 
 const styles = StyleSheet.create({
+
+  vencida: {
+    fontSize: 10,
+    color: 'red'
+  },
+
+  prazo: {
+    fontSize: 10,
+    color: 'green'
+  },
+
   task: {
     backgroundColor: '#000',
     paddingVertical: 14,
