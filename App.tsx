@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, Platform, StatusBar as RNStatusBar, Image, Pressable, ActivityIndicator, Modal } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, Platform, StatusBar as RNStatusBar, Image, Pressable, ActivityIndicator, Modal, Button } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Checkbox from 'expo-checkbox';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import TaskList from './src/components/TaskList';
 import { addTask, deleteTask, getAllTasks, updateTask, TaskItem } from './src/utils/handle-api';
-import globalStyles from './src/styles/global'
+import { globalStyles } from './src/styles/global';
+import AboutScreen from './src/components/AboutScreen';;
+
 
 export default function App() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -13,11 +15,15 @@ export default function App() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [taskId, setTaskId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [logoError, setLogoError] = useState(false);
+  const [filter, setFilter] = useState <'all' | 'completed' | 'pending'>('all');
 
+  const [aboutModalVisible, setAboutModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [priority, setPriority] = useState<'Baixa' | 'Média' | 'Alta'>('Baixa');
 
   useEffect(() => {
     getAllTasks(setTasks, setLoading);
@@ -27,6 +33,7 @@ export default function App() {
     setText("");
     setCompleted(false);
     setDueDate(null);
+    setPriority('Baixa');
     setIsUpdating(false);
     setTaskId("");
     setModalVisible(false);
@@ -59,15 +66,35 @@ export default function App() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <Image 
-            source={require('./assets/task-app-banner.png')} 
-            style={styles.logo} 
-          />
-          <Text style={globalStyles.text}>Tarefas</Text>
+          {!logoError && <Text style={styles.header}>Tarefas</Text>}
         </View>
 
         <View style={styles.counterContainer}>
           <Text style={styles.counterText}>Total de Tarefas: {tasks.length}</Text>
+        </View>
+
+        <View style={styles.filterContainer}>
+          <TouchableOpacity 
+            style={[styles.filterButton, filter === 'all' ? styles.filterButtonActive : styles.filterButtonInactive]} 
+            onPress={() => setFilter('all')}
+          >
+            <Text style={filter === 'all' ? styles.filterTextActive : styles.filterTextInactive}>Todas</Text>
+
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.filterButton, filter === 'completed' ? styles.filterButtonActive : styles.filterButtonInactive]} 
+            onPress={() => setFilter('completed')}
+          >
+
+          <Text style={filter === 'completed' ? styles.filterTextActive : styles.filterTextInactive}>Concluídas</Text>
+
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.filterButton, filter === 'pending' ? styles.filterButtonActive : styles.filterButtonInactive]} 
+            onPress={() => setFilter('pending')}
+          >
+            <Text style={filter === 'pending' ? styles.filterTextActive : styles.filterTextInactive}>Pendentes</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.actionButtonsContainer}>
@@ -94,8 +121,16 @@ export default function App() {
           </Pressable>
         </View>
 
+        <View style={styles.aboutButtonContainer}>
+          <Button title="Sobre o App" onPress={() => setAboutModalVisible(true)} />
+        </View>
+
         <TaskList 
-          tasks={tasks} 
+          tasks={tasks.filter(t => {
+            if (filter === 'completed') return t.completed;
+            if (filter === 'pending') return !t.completed;
+            return true;
+          })} 
           onUpdate={updateMode} 
           onDelete={(id) => deleteTask(id, setTasks)} 
         />
@@ -171,6 +206,27 @@ export default function App() {
               </View>
             </View>
 
+            <View style={styles.fieldRow}>
+              <Text style={styles.fieldLabel}>Prioridade:</Text>
+              <View style={styles.priorityContainer}>
+                {['Baixa', 'Média', 'Alta'].map((p) => (
+                  <TouchableOpacity 
+                    key={p} 
+                    style={[
+                      styles.priorityButton, 
+                      priority === p && { 
+                        backgroundColor: p === 'Baixa' ? '#4caf50' : p === 'Média' ? '#ff9800' : '#f44336',
+                        borderColor: p === 'Baixa' ? '#4caf50' : p === 'Média' ? '#ff9800' : '#f44336'
+                      }
+                    ]}
+                    onPress={() => setPriority(p as any)}
+                  >
+                    <Text style={[styles.priorityText, priority === p && styles.priorityTextActive]}>{p}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
             <View style={styles.modalActions}>
               <TouchableOpacity style={styles.modalCancelBtn} onPress={resetForm}>
                 <Text style={styles.modalCancelText}>Cancelar</Text>
@@ -187,6 +243,14 @@ export default function App() {
         </View>
       </Modal>
 
+      <Modal
+        visible={aboutModalVisible}
+        animationType="slide"
+        onRequestClose={() => setAboutModalVisible(false)}
+      >
+        <AboutScreen onClose={() => setAboutModalVisible(false)} />
+      </Modal>
+
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -195,8 +259,8 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 20,
+    backgroundColor: globalStyles.backgroundColor,
+    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
@@ -226,14 +290,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   counterText: {
-    fontSize: 16,
+    fontSize: globalStyles.bodyFontSize,
     color: '#666',
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 12,
+  },
+  filterButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  filterButtonActive: {
+    backgroundColor: '#000',
+    borderColor: '#000',
+  },
+  filterButtonInactive: {
+    backgroundColor: 'transparent',
+    borderColor: '#000',
+  },
+  filterTextActive: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  filterTextInactive: {
+    color: '#000',
+    fontSize: 14,
   },
   actionButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 16,
     marginTop: 16,
+  },
+  aboutButtonContainer: {
+    marginTop: 16,
+    alignItems: 'center',
   },
   actionButton: {
     paddingVertical: 14,
@@ -254,8 +351,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   actionButtonAdd: {
-    backgroundColor: '#000',
-    shadowColor: '#000',
+    backgroundColor: globalStyles.primaryColor,
+    shadowColor: globalStyles.primaryColor,
   },
   actionButtonAddPressed: {
     backgroundColor: '#333',
@@ -328,6 +425,27 @@ const styles = StyleSheet.create({
   },
   checkboxContainer: {
     marginLeft: 16,
+  },
+  priorityContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    marginLeft: 16,
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  priorityButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  priorityText: {
+    color: '#333',
+  },
+  priorityTextActive: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   datePickerBtn: {
     borderWidth: 1,
