@@ -32,7 +32,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onUpdate, onDelete }) => {
           <Text style={styles.sectionHeader}>{title}</Text>
         )}
         renderItem={({ item }) => (
-          {/* TODO (Zustand): Remova as props passadas para o TaskItem após refatorá-lo */}
+          
           <TaskItem
             task={item}
             updateMode={() => onUpdate(item)}
